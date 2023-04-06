@@ -10,6 +10,10 @@ SO THAT I can gauge my progress compared to my peers
 
 #
 
+## Assets
+
+## Links
+
 # Acknowledgements
 
 [CSS Reset Document](https://meyerweb.com/eric/tools/css/reset/)
