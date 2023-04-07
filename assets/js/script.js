@@ -17,4 +17,4 @@ var li3 = document.createElement("li");
 var li4 = document.createElement("li");
 
 h1El.textContent = "Dragon Ball (qui)Z";
-p1El.textContent = "Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!"
+p1El.textContent = "Try to answer the following Dragon Ball/ Dragon Ball Z related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!"
