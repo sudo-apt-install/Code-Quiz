@@ -116,7 +116,6 @@ function renderQuestion() {
     for (let i = 0; i < currentQuestionObject.options.length; i++) {
         var option = currentQuestionObject.options[i];
         var answerChoiceButton = document.createElement("button");
-        answerChoiceButton.setAttribute("id",1000+i);
         answerChoiceButton.textContent = option;
         answerChoiceButton.setAttribute("style", "display: flex; justify-content: center; align-items: space-between; margin:auto; width:10%; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
         answerChoiceButton.dataset.value = option;
@@ -148,17 +147,22 @@ function setQuizStyling(){
 
 
 // checks if the chosen answer is the correct one
-function checkAnswer(evt) {
-    console.dir(evt);
-  //console.log(this.dataset.value);
+function checkAnswer() {
+
+   // console.dir(evt);
+  console.dir(this.dataset);
   if (this.dataset.value === currentQuestionObject.answer) {
     currentScore += 10;
+    console.log("right");
     alert(currentQuestionObject.funFact);
     selectQuestion();
+    removeAnswerChoices();
+    renderQuestion();
   } else{
     secondsLeft -= 15;
     selectQuestion();
     removeAnswerChoices();
     renderQuestion();
+    console.log('wrong')
   };
 };
