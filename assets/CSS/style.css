@@ -1,3 +1,11 @@
 *{
     font-family: 'Roboto Slab', serif;
 }
+
+.start{
+
+}
+
+.hide{
+    display: none;
+}
