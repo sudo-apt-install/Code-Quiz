@@ -89,16 +89,17 @@ startButton.addEventListener("click", function(){
 function start(){
     display.classList.remove("hide");
     selectQuestion();
+    renderQuestion();
 }
 
 // create a hash set to store questions that were already asked
 var previousQuestions = new Set();
 
 function selectQuestion(){
-    let currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
+    currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
     
     if (!previousQuestions.has(currentQuestionObject)){
-        var currentQuestion = currentQuestionObject.question;
+        currentQuestion = currentQuestionObject.question;
         previousQuestions.add(currentQuestionObject);
     } else {
         selectQuestion();
@@ -108,16 +109,10 @@ function selectQuestion(){
 }
 
 function renderQuestion() {
-    var currentQuestionObject = questionPool[currentQuestion];
-    primaryQuestion.textContent = currentQuestionObject.question;
-  
-    // remove existing options from the DOM
-    while (optionEl.firstChild) {
-      optionEl.removeChild(optionEl.firstChild);
-    }
+    primaryQuestion.textContent = currentQuestion;
   
     // create and add new options to the DOM
-    for (var i = 0; i < currentQuestionObject.options.length; i++) {
+    for (let i = 0; i < currentQuestionObject.options.length; i++) {
       var option = currentQuestionObject.options[i];
       var button = document.createElement("button");
       button.textContent = option;
