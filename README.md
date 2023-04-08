@@ -1,4 +1,4 @@
-# Code-Quiz
+# DBZ Quiz
 
 #
 
