@@ -1,3 +1,4 @@
+
 var body = document.body;
 var h1El = document.createElement("h1");
 var startButton = document.createElement("button");
@@ -110,6 +111,7 @@ function selectQuestion(){
 
 function renderQuestion() {
     primaryQuestion.textContent = currentQuestion;
+    optionEl.innerHTML = "";
   
     // create and add new options to the DOM
     for (let i = 0; i < currentQuestionObject.options.length; i++) {
@@ -130,6 +132,8 @@ function checkAnswer() {
   if (this.dataset.value === currentQuestionObject.answer) {
     currentScore += 10;
     alert(currentQuestionObject.funFact);
+    selectQuestion();
+  } else{
     selectQuestion();
   }
 }
