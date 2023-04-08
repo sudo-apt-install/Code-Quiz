@@ -1,14 +1,17 @@
 
+// Globally scoped variables to build the page
 var body = document.body;
 var h1El = document.createElement("h1");
 var startButton = document.createElement("button");
-var cardFooter = document.createElement("div");
 var infoEl = document.createElement("div");
 var timeElement = document.querySelector(".time");
 var display = document.querySelector(".container");
 var primaryQuestion = document.querySelector(".theQuestion");
 var optionEl = document.querySelector('.options');
 var currentScore = 0;
+// globally scoped variable for the time and check functions
+var secondsLeft = 100;
+/*****************************************************************/
 
 let questionPool = [
     {
@@ -39,37 +42,25 @@ let questionPool = [
         question: 'What is the One thing a Saiyan always keeps?',
         options: ['HIS DIGNITY!!!!','HIS PRIDE!!!!', 'HIS POWER!!!!', 'HIS WORD!!!!', 'CONTROL!!!!'],
         answer: 'HIS PRIDE!!!!',
-        funFact: "Babidi got much more than her bargained for trying to control the Prince of Saiyans."
+        funFact: "Babidi got much more than he bargained for trying to control the Prince of Saiyans!"
     },
 ];
 
-//Creating a list element
-var listElement = document.createElement("ol");
-
-//Creating ordered list items
-var li1 = document.createElement("li");
-var li2 = document.createElement("li");
-var li3 = document.createElement("li");
-var li4 = document.createElement("li");
-var li5 = document.createElement("li");
-
 h1El.textContent = "Dragon Ball (qui)Z";
-//h2El.textContent = "Time Remaining: "
-infoEl.textContent = "Try to answer the following Dragon Ball/ Dragon Ball Z related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!"
+infoEl.textContent = "Try to answer the following Dragon Ball/ Dragon Ball Z related questions within the time limit. Keep in mind that incorrect answers will penalize your time by fifteen seconds, and your score!"
 
-startButton.innerHTML = "Start Quiz!"
+startButton.innerHTML = "Start Quiz!";
+//startButton.innerHTML.setAttribute = ("style", "align-content: center; justify-content: center;")
 
 body.appendChild(h1El);
 body.appendChild(infoEl);
 body.appendChild(startButton);
 
-h1El.setAttribute("style", "margin:auto; width:50%; text-align:center;");
-startButton.setAttribute("style", "display: flex; justify-content: center; margin:auto; width:10%; text-align:center; background-color: #CC5200; color: white; ");
-infoEl.setAttribute("style", "margin:auto; width:50%; text-align:center;");
+h1El.setAttribute("style", "display: flex; justify-content: center; margin-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
+startButton.setAttribute("style", "display: flex; justify-content: center; align-items: space-between; margin:auto; width:20vw; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
+infoEl.setAttribute("style", "display: flex; justify-content: center; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 
-
-var secondsLeft = 100;
-
+// Begins the quiz timer
 function setTime(){
 
     var timerInterval = setInterval(function() {
@@ -83,19 +74,23 @@ function setTime(){
     },1000)
 }
 
-startButton.addEventListener("click", function(){
+// Begins the quiz
+startButton.addEventListener("click", function(evt){
+    console.log(evt);
     setTime();
-    start();
+    selectQuestion();
+    body.removeChild(h1El);
+    body.removeChild(infoEl);
+    body.removeChild(startButton)
     renderQuestion();
 })
 
-function start(){
-    selectQuestion();
-}
 
 // create a hash set to store questions that were already asked
 var previousQuestions = new Set();
 
+
+// function to select the next question at random
 function selectQuestion(){
     currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
     
@@ -105,35 +100,65 @@ function selectQuestion(){
     } else {
         selectQuestion();
     }
-
+    setQuizStyling();
     console.log(currentQuestion);
 }
 
+// create an ordered list
+var buttonList = document.createElement("ul");
+
+// displays the first question once the start button is clicked
 function renderQuestion() {
     primaryQuestion.textContent = currentQuestion;
     optionEl.innerHTML = "";
   
     // create and add new options to the DOM
     for (let i = 0; i < currentQuestionObject.options.length; i++) {
-      var option = currentQuestionObject.options[i];
-      var answerChoiceButton = document.createElement("button");
-      answerChoiceButton.textContent = option;
-      answerChoiceButton.dataset.value = option;
-      answerChoiceButton.addEventListener("click", checkAnswer);
-      optionEl.appendChild(answerChoiceButton);
-      
-    }
-}
-  
+        var option = currentQuestionObject.options[i];
+        var answerChoiceButton = document.createElement("button");
+        answerChoiceButton.setAttribute("id",1000+i);
+        answerChoiceButton.textContent = option;
+        answerChoiceButton.setAttribute("style", "display: flex; justify-content: center; align-items: space-between; margin:auto; width:10%; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
+        answerChoiceButton.dataset.value = option;
+        answerChoiceButton.addEventListener("click", checkAnswer);
+        
+        // create a new list item for the button and append it to the list
+        var listItem = document.createElement("li");
+        listItem.setAttribute("id", 2000+i);
+        listItem.appendChild(answerChoiceButton);
+        buttonList.appendChild(listItem);
+        listItem.setAttribute ("style", "margin-top: 1%;")
+    };
+
+    // append the list to the DOM
+    optionEl.appendChild(buttonList);
+
+};
+
+function removeAnswerChoices(){
+    for (var m = 2000; m < 2005; m++){
+        buttonList.removeChild(document.getElementById(m.toString()));
+    };
+};
+
+function setQuizStyling(){
+    primaryQuestion.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem;");
+    timeElement.setAttribute("style", "display: flex; justify-content: flex-end; width: 95%; font-size: 2rem; ");
+};
 
 
-function checkAnswer() {
-  console.log(this.dataset.value);
+// checks if the chosen answer is the correct one
+function checkAnswer(evt) {
+    console.dir(evt);
+  //console.log(this.dataset.value);
   if (this.dataset.value === currentQuestionObject.answer) {
     currentScore += 10;
     alert(currentQuestionObject.funFact);
     selectQuestion();
   } else{
+    secondsLeft -= 15;
     selectQuestion();
-  }
-}
+    removeAnswerChoices();
+    renderQuestion();
+  };
+};
