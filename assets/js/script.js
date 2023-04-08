@@ -7,6 +7,7 @@ var timeElement = document.querySelector(".time");
 var display = document.querySelector(".container");
 var primaryQuestion = document.querySelector(".theQuestion");
 var optionEl = document.querySelector('.options');
+var currentScore = 0;
 
 let questionPool = [
     {
@@ -84,12 +85,11 @@ function setTime(){
 startButton.addEventListener("click", function(){
     setTime();
     start();
+    renderQuestion();
 })
 
 function start(){
-    display.classList.remove("hide");
     selectQuestion();
-    renderQuestion();
 }
 
 // create a hash set to store questions that were already asked
@@ -114,11 +114,12 @@ function renderQuestion() {
     // create and add new options to the DOM
     for (let i = 0; i < currentQuestionObject.options.length; i++) {
       var option = currentQuestionObject.options[i];
-      var button = document.createElement("button");
-      button.textContent = option;
-      button.dataset.value = option;
-      button.addEventListener("click", checkAnswer);
-      optionEl.appendChild(button);
+      var answerChoiceButton = document.createElement("button");
+      answerChoiceButton.textContent = option;
+      answerChoiceButton.dataset.value = option;
+      answerChoiceButton.addEventListener("click", checkAnswer);
+      optionEl.appendChild(answerChoiceButton);
+      
     }
 }
   
@@ -126,8 +127,9 @@ function renderQuestion() {
 
 function checkAnswer() {
   console.log(this.dataset.value);
-  if (this.dataset.value === questionPool[currentQuestion].answer) {
-    currentQuestion ++;
-    renderQuestion();
+  if (this.dataset.value === currentQuestionObject.answer) {
+    currentScore += 10;
+    alert(currentQuestionObject.funFact);
+    selectQuestion();
   }
 }
