@@ -1,4 +1,3 @@
-
 // Globally scoped variables to build the page
 var body = document.body;
 var h1El = document.createElement("h1");
@@ -9,8 +8,9 @@ var display = document.querySelector(".container");
 var primaryQuestion = document.querySelector(".theQuestion");
 var optionEl = document.querySelector('.options');
 var currentScore = 0;
-// globally scoped variable for the time and check functions
-var secondsLeft = 100;
+var buttonList = document.createElement("ul"); // create an ordered list
+var QRElement = document.createElement("div");//Questions Remaining Element
+var secondsLeft = 100; // globally scoped variable for the time and check functions
 /*****************************************************************/
 
 let questionPool = [
@@ -67,16 +67,16 @@ function setTime(){
         secondsLeft--;
         timeElement.textContent = `Time remaining: ${secondsLeft}`;
         
-        if(secondsLeft === 0){
+        if(secondsLeft < 1){
             clearInterval(timerInterval);
+            quizOver();
         }
 
     },1000)
 }
 
 // Begins the quiz
-startButton.addEventListener("click", function(evt){
-    console.log(evt);
+startButton.addEventListener("click", function(){
     setTime();
     selectQuestion();
     body.removeChild(h1El);
@@ -88,24 +88,31 @@ startButton.addEventListener("click", function(evt){
 
 // create a hash set to store questions that were already asked
 var previousQuestions = new Set();
+var remainingQuestions = questionPool.length;
 
-
+// function to select the next question at random
 // function to select the next question at random
 function selectQuestion(){
     currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
     
-    if (!previousQuestions.has(currentQuestionObject)){
+    
+    if (!previousQuestions.has(currentQuestionObject.question)){
+        remainingQuestions -= 1;
         currentQuestion = currentQuestionObject.question;
-        previousQuestions.add(currentQuestionObject);
+        previousQuestions.add(currentQuestionObject.question);
+        //console.log(`previous questions length is ${previousQuestions.size}`);
+        if(previousQuestions.size === questionPool.length){
+            quizOver();
+        }
     } else {
         selectQuestion();
     }
     setQuizStyling();
-    console.log(currentQuestion);
 }
 
-// create an ordered list
-var buttonList = document.createElement("ul");
+
+
+
 
 // displays the first question once the start button is clicked
 function renderQuestion() {
@@ -135,25 +142,26 @@ function renderQuestion() {
 };
 
 function removeAnswerChoices(){
+    //2000 because I set the list item Id's to 2000+i
     for (var m = 2000; m < 2005; m++){
         buttonList.removeChild(document.getElementById(m.toString()));
     };
 };
 
 function setQuizStyling(){
+    body.appendChild(QRElement);
     primaryQuestion.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem;");
     timeElement.setAttribute("style", "display: flex; justify-content: flex-end; width: 95%; font-size: 2rem; ");
+    QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
+    QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 };
 
 
 // checks if the chosen answer is the correct one
 function checkAnswer() {
 
-   // console.dir(evt);
-  console.dir(this.dataset);
   if (this.dataset.value === currentQuestionObject.answer) {
     currentScore += 10;
-    console.log("right");
     alert(currentQuestionObject.funFact);
     selectQuestion();
     removeAnswerChoices();
@@ -163,6 +171,11 @@ function checkAnswer() {
     selectQuestion();
     removeAnswerChoices();
     renderQuestion();
-    console.log('wrong')
   };
 };
+
+//function runs to end the quiz once the conditions are met
+function quizOver(){
+    removeAnswerChoices();
+    location.href = '/assets/high-scores.html'
+}
