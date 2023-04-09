@@ -21,6 +21,12 @@ var input = document.createElement('input');
 input.type = 'text';
 input.name = 'initials';
 input.placeholder = 'Enter your initials';
+initialForm.appendChild(input);
+initialForm.addEventListener("submit", function(event){
+    event.preventDefault();
+    var initials = input.value//event.target.value 
+    console.log(initials);
+})
 
 /*****************************************************************/
 
@@ -110,20 +116,25 @@ var remainingQuestions = questionPool.length;
 // function to select the next question at random
 function selectQuestion(){
     currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
-    
-    
+    console.log(currentQuestionObject);
+
     if (!previousQuestions.has(currentQuestionObject.question)){
+        console.log('ding');
         remainingQuestions -= 1;
         currentQuestion = currentQuestionObject.question;
         previousQuestions.add(currentQuestionObject.question);
-        console.log(`previous questions length is ${previousQuestions.size}`);
+        //console.log(`previous questions length is ${previousQuestions.size}`);
+
         if(previousQuestions.size === questionPool.length){
             quizOver();
+            return;
         }
     } else {
         selectQuestion();
     }
     setQuizStyling();
+    
+    
 }
 
 
@@ -134,6 +145,8 @@ function selectQuestion(){
 function renderQuestion() {
     primaryQuestion.textContent = currentQuestion;
     optionEl.innerHTML = "";
+
+    buttonList.innerHTML="";
   
     // create and add new options to the DOM
     for (let i = 0; i < currentQuestionObject.options.length; i++) {
@@ -158,21 +171,12 @@ function renderQuestion() {
 
 };
 
-function removeAnswerChoices(){
-    //Had to add this because I kept getting an error once I hit the last question
-    if (previousQuestions.size < questionPool.length){        
-        //1000 because I set the list item Id's to 1000+i
-        for (var m = 1000; m < 1005; m++){
-            buttonList.removeChild(document.getElementById(m));
-        };
-    }else{
-        document.open();
-    }
-};
+
 
 function setQuizStyling(){
     primaryQuestion.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem;");
     timeElement.setAttribute("style", "display: flex; justify-content: flex-end; width: 95%; font-size: 2rem; ");
+    highScoreElement.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem; border: 3px solid black; ");
     //body.appendChild(QRElement);
     // QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
     // QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
@@ -187,20 +191,27 @@ function checkAnswer(event) {
       secondsLeft -= 15;
     };
 
-    updateLocalStorage(); // update local storage with current score
-    removeAnswerChoices();
-    selectQuestion();
-    renderQuestion();
+    console.log(previousQuestions.size);
+    console.log(questionPool.length);
+
+    if(previousQuestions.size != questionPool.length){
+        selectQuestion();
+        renderQuestion();
+    } else{
+        buttonList.innerHTML="";
+        quizOver();
+    }
 };
   
 
 //function runs to end the quiz once the conditions are met
 function quizOver(){
-    removeAnswerChoices();
+    updateLocalStorage(); // update local storage with current score
     clearInterval(timerInterval);
     highScoreElement.textContent = "High Score: " + highScore;
-    primaryQuestion.textContent = highScoreElement;
+    primaryQuestion.textContent = "";
     display.appendChild(highScoreElement);
+    display.appendChild(initialForm);
 };
 
 
@@ -210,7 +221,9 @@ function quizOver(){
 
 // store the high score to local storage
 function updateLocalStorage() {
-    localStorage.setItem("highScore", currentScore);
+    if(currentScore > highScore){
+        localStorage.setItem("highScore", currentScore);
+    }
 };
 
   
