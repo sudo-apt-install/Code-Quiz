@@ -1,3 +1,4 @@
+
 // Globally scoped variables to build the page
 var body = document.body;
 var h1El = document.createElement("h1");
@@ -7,10 +8,20 @@ var timeElement = document.querySelector(".time");
 var display = document.querySelector(".container");
 var primaryQuestion = document.querySelector(".theQuestion");
 var optionEl = document.querySelector('.options');
-var currentScore = 0;
 var buttonList = document.createElement("ul"); // create an ordered list
 var QRElement = document.createElement("div");//Questions Remaining Element
 var secondsLeft = 100; // globally scoped variable for the time and check functions
+
+// globals for high score
+var currentScore = 0;
+var highScoreElement = document.createElement("div");
+var highScore = localStorage.getItem("highScore");
+var initialForm = document.createElement('form');
+var input = document.createElement('input');
+input.type = 'text';
+input.name = 'initials';
+input.placeholder = 'Enter your initials';
+
 /*****************************************************************/
 
 let questionPool = [
@@ -30,6 +41,12 @@ let questionPool = [
         question: 'How many planets does Cooler own?',
         options: ['79', '256', '23', '153', '312'],
         answer: '256',
+        funFact: 'Far more than his brother Frieza!'
+    },
+    {
+        question: 'By the end of Dragon Ball Z, which character is the only character to have never died?',
+        options: ['Master Roshi', 'Yajirobi', 'Hercule', 'Goku', 'Piccolo'],
+        answer: 'Hercule',
         funFact: 'Far more than his brother Frieza!'
     },
     {
@@ -62,17 +79,16 @@ infoEl.setAttribute("style", "display: flex; justify-content: center; margin:aut
 
 // Begins the quiz timer
 function setTime(){
+    timerInterval = setInterval(function() {
+    secondsLeft--;
+    timeElement.textContent = `Time remaining: ${secondsLeft}`;
+    
+    if(secondsLeft < 1){
+        clearInterval(timerInterval);
+        quizOver();
+    }
 
-    var timerInterval = setInterval(function() {
-        secondsLeft--;
-        timeElement.textContent = `Time remaining: ${secondsLeft}`;
-        
-        if(secondsLeft < 1){
-            clearInterval(timerInterval);
-            quizOver();
-        }
-
-    },1000)
+},1000)
 }
 
 // Begins the quiz
@@ -100,7 +116,7 @@ function selectQuestion(){
         remainingQuestions -= 1;
         currentQuestion = currentQuestionObject.question;
         previousQuestions.add(currentQuestionObject.question);
-        //console.log(`previous questions length is ${previousQuestions.size}`);
+        console.log(`previous questions length is ${previousQuestions.size}`);
         if(previousQuestions.size === questionPool.length){
             quizOver();
         }
@@ -128,9 +144,10 @@ function renderQuestion() {
         answerChoiceButton.dataset.value = option;
         answerChoiceButton.addEventListener("click", checkAnswer);
         
+        
         // create a new list item for the button and append it to the list
         var listItem = document.createElement("li");
-        listItem.setAttribute("id", 2000+i);
+        listItem.setAttribute("id", 1000+i);
         listItem.appendChild(answerChoiceButton);
         buttonList.appendChild(listItem);
         listItem.setAttribute ("style", "margin-top: 1%;")
@@ -142,40 +159,62 @@ function renderQuestion() {
 };
 
 function removeAnswerChoices(){
-    //2000 because I set the list item Id's to 2000+i
-    for (var m = 2000; m < 2005; m++){
-        buttonList.removeChild(document.getElementById(m.toString()));
-    };
+    //Had to add this because I kept getting an error once I hit the last question
+    if (previousQuestions.size < questionPool.length){        
+        //1000 because I set the list item Id's to 1000+i
+        for (var m = 1000; m < 1005; m++){
+            buttonList.removeChild(document.getElementById(m));
+        };
+    }else{
+        document.open();
+    }
 };
 
 function setQuizStyling(){
-    body.appendChild(QRElement);
     primaryQuestion.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem;");
     timeElement.setAttribute("style", "display: flex; justify-content: flex-end; width: 95%; font-size: 2rem; ");
-    QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
-    QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
+    //body.appendChild(QRElement);
+    // QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
+    // QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 };
 
 
 // checks if the chosen answer is the correct one
-function checkAnswer() {
+function checkAnswer(event) {
+    if (event.target.dataset.value === currentQuestionObject.answer) {
+      currentScore += 15;
+    } else {
+      secondsLeft -= 15;
+    };
 
-  if (this.dataset.value === currentQuestionObject.answer) {
-    currentScore += 10;
-    alert(currentQuestionObject.funFact);
-    selectQuestion();
+    updateLocalStorage(); // update local storage with current score
     removeAnswerChoices();
-    renderQuestion();
-  } else{
-    secondsLeft -= 15;
     selectQuestion();
-    removeAnswerChoices();
     renderQuestion();
-  };
 };
+  
 
 //function runs to end the quiz once the conditions are met
 function quizOver(){
     removeAnswerChoices();
-    location.href = '/assets/high-scores.html'
-}
+    clearInterval(timerInterval);
+    highScoreElement.textContent = "High Score: " + highScore;
+    primaryQuestion.textContent = highScoreElement;
+    display.appendChild(highScoreElement);
+};
+
+
+
+
+// Add in a form with prevent default behavior (new page)
+
+// store the high score to local storage
+function updateLocalStorage() {
+    localStorage.setItem("highScore", currentScore);
+};
+
+  
+
+// wipe the page upon quiz completion/timeout/view high scores button click
+// display high scores
+
