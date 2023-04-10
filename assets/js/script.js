@@ -1,8 +1,8 @@
-
 // Globally scoped variables to build the page
 var body = document.body;
 var h1El = document.createElement("h1");
 var startButton = document.createElement("button");
+var restartButton = document.createElement("button");
 var infoEl = document.createElement("div");
 var timeElement = document.querySelector(".time");
 var display = document.querySelector(".container");
@@ -12,10 +12,16 @@ var buttonList = document.createElement("ul"); // create an ordered list
 var QRElement = document.createElement("div");//Questions Remaining Element
 var secondsLeft = 100; // globally scoped variable for the time and check functions
 
+
 // globals for high score
+var table = document.createElement('table');
+var tableHead = document.createElement('thead');
+var tableBody = document.createElement('tbody');
+var checkHighScores = document.createElement("button");
+var clearHighScores = document.createElement("button");
 var currentScore = 0;
 var highScoreElement = document.createElement("div");
-var highScore = localStorage.getItem("highScore");
+var highScore = localStorage.getItem("High Score");
 var initialForm = document.createElement('form');
 var input = document.createElement('input');
 input.type = 'text';
@@ -24,8 +30,18 @@ input.placeholder = 'Enter your initials';
 initialForm.appendChild(input);
 initialForm.addEventListener("submit", function(event){
     event.preventDefault();
-    var initials = input.value//event.target.value 
+    var initials = input.value//event.target.value
     console.log(initials);
+})
+checkHighScores.addEventListener('click', function(){
+    quizOver();
+    buttonList.innerHTML="";
+    showHighScoresPage();
+})
+clearHighScores.addEventListener('click', function(){
+    localStorage.clear();
+    secondsLeft = 0;
+    currentScore = 0;
 })
 
 /*****************************************************************/
@@ -73,15 +89,29 @@ h1El.textContent = "Dragon Ball (qui)Z";
 infoEl.textContent = "Try to answer the following Dragon Ball/ Dragon Ball Z related questions within the time limit. Keep in mind that incorrect answers will penalize your time by fifteen seconds, and your score!"
 
 startButton.innerHTML = "Start Quiz!";
-//startButton.innerHTML.setAttribute = ("style", "align-content: center; justify-content: center;")
+checkHighScores.innerHTML = "High Scores";
+clearHighScores.innerHTML = "Clear High Scores!";
+restartButton.innerHTML = "Restart quiz!";
 
 body.appendChild(h1El);
 body.appendChild(infoEl);
 body.appendChild(startButton);
 
+// styling
 h1El.setAttribute("style", "display: flex; justify-content: center; margin-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 startButton.setAttribute("style", "display: flex; justify-content: center; align-items: space-between; margin:auto; width:20vw; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
+
 infoEl.setAttribute("style", "display: flex; justify-content: center; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
+
+restartButton.setAttribute("style", "display: flex; align-items: space-between; margin:auto; width:10vw; height: 5vh; text-align:center; background-color: green; border-radius: 25px; color: white; ");
+
+checkHighScores.setAttribute("style", "display: flex; justify-content: flex-start; align-items: space-between; width:10vw; height: 5vh; text-align: center; background-color: purple; border-radius: 25px; color: white; ");
+checkHighScores.style.justifyContent = "center";
+checkHighScores.style.alignItems = "center";
+
+clearHighScores.setAttribute("style", "display: flex; justify-content: flex-end; align-items: space-between; width:10vw; height: 5vh; text-align: center; background-color: #ED254E; border-radius: 25px; color: white; ");
+clearHighScores.style.justifyContent = "center";
+clearHighScores.style.alignItems = "center";
 
 // Begins the quiz timer
 function setTime(){
@@ -101,10 +131,15 @@ function setTime(){
 startButton.addEventListener("click", function(){
     setTime();
     selectQuestion();
+    console.log(currentScore);
     body.removeChild(h1El);
     body.removeChild(infoEl);
-    body.removeChild(startButton)
+    body.removeChild(startButton);
+    body.appendChild(checkHighScores);
     renderQuestion();
+})
+restartButton.addEventListener("click", function(){
+  location.reload();
 })
 
 
@@ -116,10 +151,9 @@ var remainingQuestions = questionPool.length;
 // function to select the next question at random
 function selectQuestion(){
     currentQuestionObject = questionPool[Math.floor(Math.random() * questionPool.length)];
-    console.log(currentQuestionObject);
+    //console.log(currentQuestionObject);
 
     if (!previousQuestions.has(currentQuestionObject.question)){
-        console.log('ding');
         remainingQuestions -= 1;
         currentQuestion = currentQuestionObject.question;
         previousQuestions.add(currentQuestionObject.question);
@@ -137,10 +171,6 @@ function selectQuestion(){
     
 }
 
-
-
-
-
 // displays the first question once the start button is clicked
 function renderQuestion() {
     primaryQuestion.textContent = currentQuestion;
@@ -153,7 +183,9 @@ function renderQuestion() {
         var option = currentQuestionObject.options[i];
         var answerChoiceButton = document.createElement("button");
         answerChoiceButton.textContent = option;
-        answerChoiceButton.setAttribute("style", "display: flex; justify-content: center; align-items: space-between; margin:auto; width:10%; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
+        answerChoiceButton.setAttribute("style", "display: flex; align-items: space-between; margin:auto; width:10vw; height: 5vh; text-align:center; background-color: #CC5200; border-radius: 25px; color: white; ");
+        answerChoiceButton.style.justifyContent = 'center';
+        answerChoiceButton.style.alignItems = 'center';
         answerChoiceButton.dataset.value = option;
         answerChoiceButton.addEventListener("click", checkAnswer);
         
@@ -177,22 +209,20 @@ function setQuizStyling(){
     primaryQuestion.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem;");
     timeElement.setAttribute("style", "display: flex; justify-content: flex-end; width: 95%; font-size: 2rem; ");
     highScoreElement.setAttribute("style", "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem; border: 3px solid black; ");
+    
     //body.appendChild(QRElement);
     // QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
     // QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 };
 
-
 // checks if the chosen answer is the correct one
 function checkAnswer(event) {
     if (event.target.dataset.value === currentQuestionObject.answer) {
       currentScore += 15;
+      console.log(currentScore);
     } else {
       secondsLeft -= 15;
     };
-
-    console.log(previousQuestions.size);
-    console.log(questionPool.length);
 
     if(previousQuestions.size != questionPool.length){
         selectQuestion();
@@ -200,34 +230,66 @@ function checkAnswer(event) {
     } else{
         buttonList.innerHTML="";
         quizOver();
+        display.appendChild(initialForm);
     }
 };
   
-
 //function runs to end the quiz once the conditions are met
 function quizOver(){
+    currentScore += secondsLeft;
     updateLocalStorage(); // update local storage with current score
     clearInterval(timerInterval);
-    highScoreElement.textContent = "High Score: " + highScore;
-    primaryQuestion.textContent = "";
-    display.appendChild(highScoreElement);
-    display.appendChild(initialForm);
+    highScoreElement.textContent = "Current high Score: " + highScore;
+    showHighScoresPage();
 };
 
+function buildTable(){
+    table.appendChild(tableHead);
+    table.appendChild(tableBody);
+    document.getElementById('body').appendChild(table);
+}
 
+function showHighScoresPage() {
+  // Clear the display element
+  display.innerHTML = "";
 
+  // Create the high score table
+  tableHead.innerHTML = "<tr><th>Initials</th><th>Score</th></tr>";
+  var highScores = JSON.parse(localStorage.getItem("High Scores")) || [];
+  highScores.forEach(function(score) {
+    var row = document.createElement("tr");
+    row.innerHTML = "<td>" + score.initials + "</td><td>" + score.score + "</td>";
+    tableBody.appendChild(row);
+  });
+  table.appendChild(tableHead);
+  table.appendChild(tableBody);
+  display.appendChild(table);
 
-// Add in a form with prevent default behavior (new page)
+  // Add buttons to clear the high scores and go back to the quiz
+  highScoreElement.textContent = "High Scores";
+  clearHighScores.textContent = "Clear High Scores";
+  display.appendChild(highScoreElement);
+  display.appendChild(table);
+  display.appendChild(clearHighScores);
+  display.appendChild(checkHighScores);
+  display.appendChild(restartButton);
+}
+
 
 // store the high score to local storage
 function updateLocalStorage() {
-    if(currentScore > highScore){
-        localStorage.setItem("highScore", currentScore);
-    }
-};
+  // Get the high score from local storage or set it to 0
+  var highScore = localStorage.getItem("High Score") || 0;
 
+  // If the current score is higher than the high score, update the high score
+  if (currentScore > highScore) {
+    localStorage.setItem("High Score", currentScore);
+    localStorage.setItem("Initials", input.value);
+  }
   
-
-// wipe the page upon quiz completion/timeout/view high scores button click
-// display high scores
-
+  var formData = {
+    initials: input.value
+  };
+  // Save the form data to local storage
+  localStorage.setItem("Form Data", JSON.stringify(formData));
+}
