@@ -11,13 +11,13 @@ var optionEl = document.querySelector('.options');
 var buttonList = document.createElement("ul"); // create an ordered list
 var QRElement = document.createElement("div");//Questions Remaining Element
 var secondsLeft = 100; // globally scoped variable for the time and check functions
-
-
 // globals for high score
 var table = document.createElement('table');
 var tableHead = document.createElement('thead');
 var tableBody = document.createElement('tbody');
 var checkHighScores = document.createElement("button");
+checkHighScores.setAttribute("id", 3000);
+var myHeader = document.createElement("header");
 var clearHighScores = document.createElement("button");
 var currentScore = 0;
 var highScoreElement = document.createElement("div");
@@ -28,11 +28,13 @@ input.type = 'text';
 input.name = 'initials';
 input.placeholder = 'Enter your initials';
 initialForm.appendChild(input);
+initialForm.setAttribute('id', 2000);
 initialForm.addEventListener("submit", function(event){
     event.preventDefault();
     var initials = input.value//event.target.value
     console.log(initials);
 })
+
 checkHighScores.addEventListener('click', function(){
     quizOver();
     buttonList.innerHTML="";
@@ -104,6 +106,8 @@ startButton.setAttribute("style", "display: flex; justify-content: center; align
 infoEl.setAttribute("style", "display: flex; justify-content: center; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 
 restartButton.setAttribute("style", "display: flex; align-items: space-between; margin:auto; width:10vw; height: 5vh; text-align:center; background-color: green; border-radius: 25px; color: white; ");
+restartButton.style.justifyContent = 'center';
+restartButton.style.alignItems = 'center';
 
 checkHighScores.setAttribute("style", "display: flex; justify-content: flex-start; align-items: space-between; width:10vw; height: 5vh; text-align: center; background-color: purple; border-radius: 25px; color: white; ");
 checkHighScores.style.justifyContent = "center";
@@ -230,13 +234,14 @@ function checkAnswer(event) {
     } else{
         buttonList.innerHTML="";
         quizOver();
-        display.appendChild(initialForm);
     }
 };
   
 //function runs to end the quiz once the conditions are met
 function quizOver(){
-    currentScore += secondsLeft;
+    if (previousQuestions.size != questionPool.length && currentScore != 0){
+        currentScore += secondsLeft;
+    }
     updateLocalStorage(); // update local storage with current score
     clearInterval(timerInterval);
     highScoreElement.textContent = "Current high Score: " + highScore;
@@ -252,6 +257,7 @@ function buildTable(){
 function showHighScoresPage() {
   // Clear the display element
   display.innerHTML = "";
+  //document.getElementById('3000').setAttribute("disabled", "");
 
   // Create the high score table
   tableHead.innerHTML = "<tr><th>Initials</th><th>Score</th></tr>";
@@ -263,7 +269,7 @@ function showHighScoresPage() {
   });
   table.appendChild(tableHead);
   table.appendChild(tableBody);
-  display.appendChild(table);
+  body.appendChild(table);
 
   // Add buttons to clear the high scores and go back to the quiz
   highScoreElement.textContent = "High Scores";
@@ -275,6 +281,16 @@ function showHighScoresPage() {
   display.appendChild(restartButton);
 }
 
+// function getInitials(){
+//     body.appendChild(initialForm);
+//     var formData = {
+//         'initials': input.value,
+//         'High Score': highScore
+//       };
+//     // Save the form data to local storage
+//     localStorage.setItem("Form Data", JSON.stringify(formData));
+// }
+
 
 // store the high score to local storage
 function updateLocalStorage() {
@@ -283,13 +299,16 @@ function updateLocalStorage() {
 
   // If the current score is higher than the high score, update the high score
   if (currentScore > highScore) {
-    localStorage.setItem("High Score", currentScore);
-    localStorage.setItem("Initials", input.value);
+    highScore = currentScore;
+    currentScore = 0;
+    body.appendChild(initialForm);
+    var formData = {
+        'initials': input.value,
+        'High Score': highScore
+      };
+    // Save the form data to local storage
+    localStorage.setItem("Form Data", JSON.stringify(formData));
+    localStorage.setItem("High Score", highScore);
+    // localStorage.setItem("Initials", document.getElementById('2000'));
   }
-  
-  var formData = {
-    initials: input.value
-  };
-  // Save the form data to local storage
-  localStorage.setItem("Form Data", JSON.stringify(formData));
 }
