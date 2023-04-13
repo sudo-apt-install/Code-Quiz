@@ -26,3 +26,5 @@ SO THAT I can gauge my progress compared to my peers
 [Broly Image Credit](https://www.deviantart.com/nourssj3/art/Broly-Powering-Up-773681442)
 
 [CSS Reset Document](https://meyerweb.com/eric/tools/css/reset/)
+
+[Dragon Ball Z facts](https://www.ranker.com/list/dragon-ball-z-facts/coy-jandreau)

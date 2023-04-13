@@ -11,15 +11,8 @@
     display: none;
 }
 
-/* .button { 
-    display: flex; 
-    align-items: space-between; 
-    margin:auto; 
-    width: 10vw; 
-    height: 5vh; 
-    text-align:center; 
-    background-color: #CC5200; 
-    border-radius: 25px; 
-    color: white;
-    align-items: space-between
-} */
+
+
+.container {
+    border-bottom: 2px solid black;
+}
