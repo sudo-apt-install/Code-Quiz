@@ -14,6 +14,9 @@ SO THAT I can gauge my progress compared to my peers
 
 ## Links
 
+### [Github Pages](https://sudo-apt-install.github.io/DBZ-Quiz/)
+### [Repository](https://github.com/sudo-apt-install/DBZ-Quiz)
+
 # Acknowledgements
 
 [Frieza image credit](https://www.deviantart.com/moxie2d/art/Frieza-143995693)
