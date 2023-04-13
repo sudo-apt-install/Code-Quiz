@@ -1,3 +1,4 @@
+
 // Globally scoped variables to build the page
 var body = document.body;
 var h1El = document.createElement("h1");
@@ -30,15 +31,24 @@ input.placeholder = "Enter your initials";
 initialForm.appendChild(input);
 initialForm.setAttribute("id", 2000);
 initialForm.addEventListener("submit", function (event) {
-  event.preventDefault();
-  var initials = input.value; //event.target.value
-  console.log(initials);
-});
+    event.preventDefault();
+    var initials = input.value;
+    if (initials !== "") { // make sure initials were entered
+      var highScores = JSON.parse(localStorage.getItem("highScores")) || []; // get high scores or create an empty array
+      highScores.push({ initials: initials, score: currentScore }); // add the new score to the array
+      localStorage.setItem("highScores", JSON.stringify(highScores)); // save the updated array to local storage
+      displayHighScores(); // display the high scores page
+    }
+  });
+
+// checkHighScores.addEventListener("click", function () {
+//   quizOver();
+//   buttonList.innerHTML = "";
+//   showHighScoresPage();
+// });
 
 checkHighScores.addEventListener("click", function () {
-  quizOver();
-  buttonList.innerHTML = "";
-  showHighScoresPage();
+  displayHighScores();
 });
 clearHighScores.addEventListener("click", function () {
   localStorage.clear();
@@ -179,7 +189,6 @@ var previousQuestions = new Set();
 var remainingQuestions = questionPool.length;
 
 // function to select the next question at random
-// function to select the next question at random
 function selectQuestion() {
   currentQuestionObject =
     questionPool[Math.floor(Math.random() * questionPool.length)];
@@ -248,11 +257,7 @@ function setQuizStyling() {
     "display: flex; justify-content: center; margin-top: 5%; margin-bottom: 5%; width:100%; text-align:center; color: black; font-size: 2rem; border: 3px solid black; "
   );
 
-  //body.appendChild(QRElement);
-  // QRElement.textContent = `Questions Remaining: ${remainingQuestions}`;
-  // QRElement.setAttribute("style", "display: flex; justify-content: flex-start; margin:auto; padding-bottom: 2%; width:100%; text-align:center; color: black; font-size: 2rem;");
 }
-
 // checks if the chosen answer is the correct one
 function checkAnswer(event) {
   if (event.target.dataset.value === currentQuestionObject.answer) {
@@ -286,6 +291,12 @@ function buildTable() {
   table.appendChild(tableHead);
   table.appendChild(tableBody);
   document.getElementById("body").appendChild(table);
+}
+
+function displayHighScores() {
+    quizOver();
+    buttonList.innerHTML = "";
+    showHighScoresPage();
 }
 
 function showHighScoresPage() {
